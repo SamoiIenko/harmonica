@@ -1,5 +1,6 @@
 import React from "react"; // Подключите CSS для стилизации
 import BuddyGreene from "../assets/BuddyGreene.mp4";
+import "./styles.css";
 
 const BackgroundVideo = () => {
   return (

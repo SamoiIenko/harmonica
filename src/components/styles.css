@@ -1,0 +1,10 @@
+.video-container {
+    width: 100vw;
+    height: 100vh;
+    overflow-y: hidden;
+}
+
+video {
+    width: 100vw;
+    height: 100vh;
+}
