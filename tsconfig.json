@@ -1,0 +1,36 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "baseUrl": "./src",
+        "paths": {
+            "@assets/*": [
+            "assets/*"
+            ],
+            "@app/*": [
+            "app/*"
+            ],
+            "@pages": [
+            "pages"
+            ],
+            "@pages/*": [
+            "pages/*"
+            ],
+            "@widgets/*": [
+            "widgets/*"
+            ],
+            "@features/*": [
+            "features/*"
+            ],
+            "@entities/*": [
+            "entities/*"
+            ],
+            "@shared/*": [
+            "shared/*"
+            ]
+        }
+    },
+    "include": [
+    "."
+    ]
+}
+  
