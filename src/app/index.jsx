@@ -1,3 +1,4 @@
+import Routing from "@pages";
 const { Suspense } = require("react");
 
 const App = () => {

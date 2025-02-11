@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 const { AnimatePresence } = require("framer-motion");
 const { Routes, Route } = require("react-router-dom");
 
@@ -8,3 +10,5 @@ const Routing = () => (
     </Routes>
   </AnimatePresence>
 );
+
+export default memo(Routing);
