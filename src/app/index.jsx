@@ -1,8 +1,10 @@
-import Routing from "@pages";
-const { Suspense } = require("react");
+import Routing from '@pages'
+const { Suspense } = require('react')
 
-const App = () => {
+const App = () => (
   <Suspense fallback="Loading Core...">
     <Routing />
-  </Suspense>;
-};
+  </Suspense>
+)
+
+export default App
