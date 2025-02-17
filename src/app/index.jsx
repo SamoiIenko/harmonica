@@ -1,4 +1,6 @@
 import Routing from '@pages'
+import { withHocs } from './providers'
+
 const { Suspense } = require('react')
 
 const App = () => (
@@ -7,4 +9,4 @@ const App = () => (
   </Suspense>
 )
 
-export default App
+export default withHocs(App)
