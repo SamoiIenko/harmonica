@@ -3,10 +3,6 @@ import { withHocs } from './providers'
 
 const { Suspense } = require('react')
 
-const App = () => (
-  <Suspense fallback="Loading Core...">
-    <Routing />
-  </Suspense>
-)
+const App = () => <Routing />
 
-export default withHocs(App)
+export default App

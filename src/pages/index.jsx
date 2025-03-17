@@ -6,10 +6,10 @@ const { Routes, Route } = require('react-router-dom')
 
 const Routing = () => (
   <AnimatePresence>
-    <Routes>
+    {/* <Routes>
       <Route index element={<MainPage />}></Route>
-      {/* <Route path="*" element={<GuestRouter />}></Route> */}
-    </Routes>
+      <Route path="*" element={<GuestRouter />}></Route>
+    </Routes> */}
   </AnimatePresence>
 )
 
