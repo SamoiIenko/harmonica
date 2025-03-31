@@ -1,13 +1,13 @@
 import React from "react";
 import BackgroundVideo from "./BackgroundVideo";
 
-function Home() {
+export const Home = () => {
   return (
     <>
       <div>Home</div>
       <BackgroundVideo />
     </>
   );
-}
+};
 
 export default Home;

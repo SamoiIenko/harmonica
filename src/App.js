@@ -1,13 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
-import Home from './components/Home';
+import { Suspense } from "react";
+import "./App.css";
+import Home from "./components/Home";
 
-function App() {
+const App = ({ onLogout }) => {
   return (
-    <div className="font-futura">
-     <Home />
-    </div>
+    <Suspense fallback="Loading core...">
+      <div className="font-futura">
+        <Home />
+      </div>
+    </Suspense>
   );
-}
+};
 
 export default App;
