@@ -1,14 +1,14 @@
-import { AnimatePrecense } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { Route, Routes } from 'react-router-dom'
 import Home from '../components/Home'
 import { memo } from 'react'
 
 const Routing = () => (
-  <AnimatePrecense>
+  <AnimatePresence>
     <Routes>
-      <Route path="/" element={Home} />
+      <Route path="/" element={<Home />} />
     </Routes>
-  </AnimatePrecense>
+  </AnimatePresence>
 )
 
 export default memo(Routing)
