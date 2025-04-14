@@ -1,7 +1,7 @@
 import React from 'react'
 import BackgroundVideo from './BackgroundVideo'
 
-export const Home = () => {
+export const StartPage = () => {
   return (
     <>
       <BackgroundVideo />
@@ -9,4 +9,4 @@ export const Home = () => {
   )
 }
 
-export default Home
+export default StartPage
