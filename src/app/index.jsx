@@ -5,4 +5,4 @@ const { Suspense } = require('react')
 
 const App = () => <Routing />
 
-export default App
+export default withHocs(App)

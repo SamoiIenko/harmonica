@@ -1,14 +1,15 @@
 import { AnimatePresence } from 'framer-motion'
 import { Route, Routes } from 'react-router-dom'
-import StartPage from '../components/Home'
-import Homepage from 'components/Homepage'
 import { memo } from 'react'
+//
+import { PreviewPage } from './preview'
+import { HomePage } from './home'
 
 const Routing = () => (
   <AnimatePresence>
     <Routes>
-      <Route path="/" element={<StartPage />} />
-      <Route path="/home" element={<Homepage />} />
+      <Route path="/" element={<PreviewPage />} />
+      <Route path="/home" element={<HomePage />} />
     </Routes>
   </AnimatePresence>
 )
