@@ -1,4 +1,25 @@
 .sidebar-block {
+    display: flex;
+    padding: 1.25rem;
+    width: 16.25rem;
+    flex-direction: column;
     border: 1px solid #0084FF;
     border-radius: 1.25rem;
+    
+
+    .sidebar-link {
+        width: fit-content;
+        color: #000;
+        font-size: 1.25rem;
+        font-weight: 400;
+        text-decoration: none;
+
+        &:not(:last-child) {
+            margin-bottom: 0.5rem;
+        }
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }

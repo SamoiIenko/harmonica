@@ -1,6 +1,9 @@
 import { memo } from 'react'
+import { Col, Row } from 'react-bootstrap'
+
 import harmonicaLogo from '@assets/Harmonica_gr.png'
 import harmonicaLayerTool from '@assets/harmonica_tool_layers.png'
+
 import { Sidebar } from '@features/sidebar'
 
 import styles from './styles.module.scss'
@@ -10,8 +13,14 @@ const _MainPageWidget = () => (
     <div className={styles['header']}>
       <img src={harmonicaLogo} alt="Harmonica Logo" />
     </div>
-    <Sidebar />
-    <img src={harmonicaLayerTool} alt="Harmonica Tool" />
+    <Row>
+      <Col md={3}>
+        <Sidebar />
+      </Col>
+      <Col md={9}>
+        <img src={harmonicaLayerTool} alt="Harmonica Tool" />
+      </Col>
+    </Row>
   </div>
 )
 export const MainPageWidget = memo(_MainPageWidget)
