@@ -14,10 +14,10 @@ const _MainPageWidget = () => (
       <img src={harmonicaLogo} alt="Harmonica Logo" />
     </div>
     <Row>
-      <Col md={3}>
+      <Col md={3} className="mt-5">
         <Sidebar />
       </Col>
-      <Col md={9}>
+      <Col md={9} className="mt-5">
         <img src={harmonicaLayerTool} alt="Harmonica Tool" />
       </Col>
     </Row>
