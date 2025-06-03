@@ -1,60 +1,65 @@
-import { memo, useRef, useState } from 'react'
+import { memo } from 'react'
 
 const _SoundRecorder = () => {
-  const audioContextRef = useRef(null)
-  const destinationRef = useRef(null)
-  const mediaRecorderRef = useRef(null)
+  const audioList = document.getElementById('audioList')
+  const audioPlayer = document.getElementById('audioPlayer')
+  let mediaRecorder
+  let audioChunks = []
 
-  const [chunks, setChunks] = useState([])
-  const [audioURL, setAudioURL] = useState(null)
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then(function (stream) {
+        mediaRecorder = new MediaRecorder(stream)
 
-  const playAndRecord = async () => {
-    if (!audioContextRef.current) {
-      const audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)()
-      const destination = audioContext.createMediaStreamDestination()
-
-      const mediaRecorder = new MediaRecorder(destination.stream)
-      mediaRecorderRef.current = mediaRecorder
-      audioContextRef.current = audioContext
-      destinationRef.current = destination
-
-      const recordedChunks = []
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          return recordedChunks.push(e.data)
+        mediaRecorder.ondataavailable = function (event) {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data)
+          }
         }
 
-        mediaRecorder.onstop = () => {
-          const blob = new Blob(recordedChunks, { type: 'audio/webm' })
-          const url = URL.createObjectURL(blob)
-          setAudioURL(url)
+        mediaRecorder.onstop = function () {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/wav' })
+          const audioURL = URL.createObjectURL(audioBlob)
+          const listItem = document.createElement('li')
+          const audioLink = document.createElement('a')
+          audioLink.href = audioURL
+          audioLink.download = 'audio.wav'
+          audioLink.textContent = 'Download Audio'
+          listItem.appendChild(audioLink)
+          audioList.appendChild(listItem)
+          audioPlayer.src = audioURL
+          audioChunks = []
         }
-      }
-    }
+      })
+      .catch(function (error) {
+        console.error('Error accessing the microphone: ' + error)
+      })
+  } else {
+    console.error("Browser doesn't support audio recording.")
+  }
 
-    const ctx = audioContextRef.current
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
+  const startRecordingButton = () => {
+    audioChunks = []
+    mediaRecorder.start()
+    startRecordingButton.disabled = true
+    stopRecordingBuutton.disabled = false
+  }
 
-    osc.connect(gain)
-    gain.connect(destinationRef.current)
-    gain.connect(ctx.destination)
-
-    osc.frequency.value = 440
-    osc.start()
-    osc.stop(ctx.currentTime + 0.5)
-
-    mediaRecorderRef.current.start()
-    setTimeout(() => {
-      mediaRecorderRef.current.stop()
-    }, 500)
+  const stopRecordingBuutton = () => {
+    mediaRecorder.stop()
+    startRecordingButton.disabled = false
+    stopRecordingBuutton.disabled = true
   }
 
   return (
     <div>
-      <button onClick={playAndRecord}>Click for sound and record</button>
-      {audioURL && <audio controls src={audioURL}></audio>}
+      <h1>Recorder</h1>
+      <button onClick={startRecordingButton}>Start recording</button>
+      <button onClick={stopRecordingBuutton}>Stop recording</button>
+      <ul id="audioList"></ul>
+
+      <audio id="audioPlayer" controls></audio>
     </div>
   )
 }
