@@ -14,6 +14,7 @@ const _SoundRecorder = () => {
 
   const audioList = document.getElementById('audioList')
   const audioPlayer = document.getElementById('audioPlayer')
+
   let mediaRecorder
   let audioChunks = []
 
@@ -34,14 +35,18 @@ const _SoundRecorder = () => {
           const audioURL = URL.createObjectURL(audioBlob)
           const listItem = document.createElement('li')
           const audioLink = document.createElement('a')
+
           audioLink.href = audioURL
           audioLink.download = 'audio.webm'
           audioLink.textContent = 'Download Audio'
 
           console.log(audioLink)
+
           listItem.appendChild(audioLink)
           audioList.appendChild(listItem)
+
           audioPlayer.src = audioURL
+
           audioChunks = []
         }
       })
@@ -80,7 +85,14 @@ const _SoundRecorder = () => {
         >
           1
         </button>
-        <button onClick={(e) => noteHandler(activeNote, e.target)}>2</button>
+        <button
+          style={{
+            backgroundColor: activeNote ? '#ffe26e' : 'green',
+          }}
+          onClick={(e) => noteHandler('two')}
+        >
+          2
+        </button>
         <button onClick={(e) => noteHandler(activeNote, e.target)}>3</button>
         <button onClick={(e) => noteHandler('four', e.target)}>4</button>
         <button onClick={(e) => noteHandler('five', e.target)}>5</button>
