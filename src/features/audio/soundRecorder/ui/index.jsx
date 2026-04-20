@@ -1,7 +1,14 @@
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
+
+import law from '@assets/law.mp3'
 
 const _SoundRecorder = () => {
   const [activeNote, setActiveNote] = useState(null)
+  const mediaRecorderRef = useRef(null)
+  const audioChunksRef = useRef([])
+  const audioListRef = useRef(null)
+  const audioPlayerRef = useRef(null)
+  const audioLaw = useRef(new Audio(law))
 
   useEffect(() => {
     if (activeNote) {
@@ -10,28 +17,23 @@ const _SoundRecorder = () => {
     }
   }, [activeNote])
 
-  const noteHandler = (notePosition) => setActiveNote(notePosition)
+  useEffect(() => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      console.error("Browser doesn't support audio recording.")
+      return
+    }
 
-  const audioList = document.getElementById('audioList')
-  const audioPlayer = document.getElementById('audioPlayer')
-
-  let mediaRecorder
-  let audioChunks = []
-
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices
       .getUserMedia({ audio: true })
-      .then(function (stream) {
-        mediaRecorder = new MediaRecorder(stream)
+      .then((stream) => {
+        const recorder = new MediaRecorder(stream)
 
-        mediaRecorder.ondataavailable = function (event) {
-          if (event.data.size > 0) {
-            audioChunks.push(event.data)
-          }
+        recorder.ondataavailable = (event) => {
+          if (event.data.size > 0) audioChunksRef.current.push(event.data)
         }
 
-        mediaRecorder.onstop = function () {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' })
+        recorder.onstop = () => {
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
           const audioURL = URL.createObjectURL(audioBlob)
           const listItem = document.createElement('li')
           const audioLink = document.createElement('a')
@@ -40,34 +42,27 @@ const _SoundRecorder = () => {
           audioLink.download = 'audio.webm'
           audioLink.textContent = 'Download Audio'
 
-          console.log(audioLink)
-
           listItem.appendChild(audioLink)
-          audioList.appendChild(listItem)
+          audioListRef.current.appendChild(listItem)
+          audioPlayerRef.current.src = audioURL
 
-          audioPlayer.src = audioURL
-
-          audioChunks = []
+          audioChunksRef.current = []
         }
+
+        mediaRecorderRef.current = recorder
       })
-      .catch(function (error) {
-        console.error('Error accessing the microphone: ' + error)
-      })
-  } else {
-    console.error("Browser doesn't support audio recording.")
-  }
+      .catch((error) => console.error('Error accessing the microphone: ' + error))
+  }, [])
+
+  const noteHandler = (notePosition) => setActiveNote(notePosition)
 
   const startRecordingButton = () => {
-    audioChunks = []
-    mediaRecorder.start()
-    startRecordingButton.disabled = true
-    stopRecordingBuutton.disabled = false
+    audioChunksRef.current = []
+    mediaRecorderRef.current.start()
   }
 
   const stopRecordingBuutton = () => {
-    mediaRecorder.stop()
-    startRecordingButton.disabled = false
-    stopRecordingBuutton.disabled = true
+    mediaRecorderRef.current.stop()
   }
 
   return (
@@ -75,7 +70,7 @@ const _SoundRecorder = () => {
       <h1>Recorder</h1>
       <button onClick={startRecordingButton}>Start recording</button>
       <button onClick={stopRecordingBuutton}>Stop recording</button>
-      <ul id="audioList"></ul>
+      <ul ref={audioListRef}></ul>
       <div>
         <button
           style={{
@@ -89,7 +84,7 @@ const _SoundRecorder = () => {
           style={{
             backgroundColor: activeNote ? '#ffe26e' : 'green',
           }}
-          onClick={(e) => noteHandler('two')}
+          onClick={() => audioLaw.current.play()}
         >
           2
         </button>
@@ -103,7 +98,7 @@ const _SoundRecorder = () => {
         <button onClick={(e) => noteHandler('ten', e.target)}>10</button>
       </div>
 
-      <audio id="audioPlayer" controls></audio>
+      <audio ref={audioPlayerRef} controls></audio>
     </div>
   )
 }
