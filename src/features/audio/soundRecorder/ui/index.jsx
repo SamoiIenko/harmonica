@@ -18,13 +18,13 @@ const _SoundRecorder = () => {
   }, [activeNote])
 
   useEffect(() => {
-    if (!navigator.mediaDevices?.getUserMedia) {
+    if (!navigator.mediaDevices?.getDisplayMedia) {
       console.error("Browser doesn't support audio recording.")
       return
     }
 
     navigator.mediaDevices
-      .getUserMedia({ audio: true })
+      .getDisplayMedia({ audio: true })
       .then((stream) => {
         const recorder = new MediaRecorder(stream)
 
@@ -33,7 +33,9 @@ const _SoundRecorder = () => {
         }
 
         recorder.onstop = () => {
-          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+          const audioBlob = new Blob(audioChunksRef.current, {
+            type: 'audio/webm',
+          })
           const audioURL = URL.createObjectURL(audioBlob)
           const listItem = document.createElement('li')
           const audioLink = document.createElement('a')
@@ -51,7 +53,9 @@ const _SoundRecorder = () => {
 
         mediaRecorderRef.current = recorder
       })
-      .catch((error) => console.error('Error accessing the microphone: ' + error))
+      .catch((error) =>
+        console.error('Error accessing the microphone: ' + error)
+      )
   }, [])
 
   const noteHandler = (notePosition) => setActiveNote(notePosition)
