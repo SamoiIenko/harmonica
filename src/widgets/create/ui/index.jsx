@@ -1,8 +1,9 @@
-import { SoundRecorder } from '@features/audio'
+import { Harmonica, SoundRecorder } from '@features/audio'
 import { memo } from 'react'
 
 const _CreatePageWidget = () => (
   <div>
+    <Harmonica />
     <SoundRecorder />
   </div>
 )

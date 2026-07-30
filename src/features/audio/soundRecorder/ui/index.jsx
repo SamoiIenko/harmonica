@@ -1,21 +1,10 @@
-import { memo, useEffect, useRef, useState } from 'react'
-
-import law from '@assets/law.mp3'
+import { memo, useEffect, useRef } from 'react'
 
 const _SoundRecorder = () => {
-  const [activeNote, setActiveNote] = useState(null)
   const mediaRecorderRef = useRef(null)
   const audioChunksRef = useRef([])
   const audioListRef = useRef(null)
   const audioPlayerRef = useRef(null)
-  const audioLaw = useRef(new Audio(law))
-
-  useEffect(() => {
-    if (activeNote) {
-      const timer = setTimeout(() => setActiveNote(null), 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [activeNote])
 
   useEffect(() => {
     if (!navigator.mediaDevices?.getDisplayMedia) {
@@ -58,8 +47,6 @@ const _SoundRecorder = () => {
       )
   }, [])
 
-  const noteHandler = (notePosition) => setActiveNote(notePosition)
-
   const startRecordingButton = () => {
     audioChunksRef.current = []
     mediaRecorderRef.current.start()
@@ -75,33 +62,6 @@ const _SoundRecorder = () => {
       <button onClick={startRecordingButton}>Start recording</button>
       <button onClick={stopRecordingBuutton}>Stop recording</button>
       <ul ref={audioListRef}></ul>
-      <div>
-        <button
-          style={{
-            backgroundColor: activeNote ? '#ffe26e' : 'green',
-          }}
-          onClick={(e) => noteHandler('one')}
-        >
-          1
-        </button>
-        <button
-          style={{
-            backgroundColor: activeNote ? '#ffe26e' : 'green',
-          }}
-          onClick={() => audioLaw.current.play()}
-        >
-          2
-        </button>
-        <button onClick={(e) => noteHandler(activeNote, e.target)}>3</button>
-        <button onClick={(e) => noteHandler('four', e.target)}>4</button>
-        <button onClick={(e) => noteHandler('five', e.target)}>5</button>
-        <button onClick={(e) => noteHandler('six', e.target)}>6</button>
-        <button onClick={(e) => noteHandler('seven', e.target)}>7</button>
-        <button onClick={(e) => noteHandler('eight', e.target)}>8</button>
-        <button onClick={(e) => noteHandler('nine', e.target)}>9</button>
-        <button onClick={(e) => noteHandler('ten', e.target)}>10</button>
-      </div>
-
       <audio ref={audioPlayerRef} controls></audio>
     </div>
   )
