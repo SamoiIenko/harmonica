@@ -1,70 +1,111 @@
-# Getting Started with Create React App
+# Harmonica
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A website for learning to play the harmonica.
 
-## Available Scripts
+Built with React 18 + Create React App (via [craco](https://craco.js.org/)), organised
+with [Feature-Slice Design](https://feature-sliced.design/). See `AGENTS.md` for the
+architecture overview.
 
-In the project directory, you can run:
+## Local setup
 
-### `npm start`
+The dev server is served at **https://harmonica.local** — not `localhost`. Two
+one-time machine-level steps are needed before `npm start` will work; everything
+else is already in the repo (`.env.development`).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Why not localhost?
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+`@features/audio/soundRecorder` uses `navigator.mediaDevices.getDisplayMedia()`.
+That API is only exposed in a [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts).
+Browsers grant `localhost` that status implicitly, but a custom hostname like
+`harmonica.local` gets nothing for free — over plain HTTP `navigator.mediaDevices`
+is `undefined` and recording silently dies. So the local server speaks real TLS,
+which also makes dev match production.
 
-### `npm test`
+### 1. Point harmonica.local at your machine
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Run once in an **elevated** terminal (Administrator).
 
-### `npm run build`
+Windows — PowerShell:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```powershell
+Add-Content -Path "$env:windir\System32\drivers\etc\hosts" -Value "`n127.0.0.1 harmonica.local"
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+macOS / Linux:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+echo "127.0.0.1 harmonica.local" | sudo tee -a /etc/hosts
+```
 
-### `npm run eject`
+Verify: `ping harmonica.local` should answer from `127.0.0.1`.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 2. Issue a locally-trusted certificate
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+[mkcert](https://github.com/FiloSottile/mkcert) runs a private certificate
+authority that it registers in your OS (and Firefox) trust store, so the
+certificates it signs are trusted with no browser warning. Nothing it generates
+leaves your machine.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Install it once — Windows (Chocolatey, elevated terminal):
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```powershell
+choco install mkcert -y
+```
 
-## Learn More
+macOS: `brew install mkcert nss` · Linux: see the mkcert README.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Then register the local CA — this is the step that needs Administrator/sudo:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```powershell
+mkcert -install
+```
 
-### Code Splitting
+Finally generate the certificate for this project, from the repository root (no
+elevation needed):
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```powershell
+mkdir certs
+mkcert -cert-file certs/harmonica.local.pem -key-file certs/harmonica.local-key.pem harmonica.local
+```
 
-### Analyzing the Bundle Size
+`certs/` is gitignored — certificates are per-machine and must never be
+committed. Re-run this last command on each new checkout or machine.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### 3. Start it
 
-### Making a Progressive Web App
+```bash
+npm install
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Opens https://harmonica.local. Port 443 needs no elevation on Windows; on
+macOS/Linux either run the server with elevated rights or set `PORT=3443` in
+`.env.local` (gitignored) and use https://harmonica.local:3443.
 
-### Advanced Configuration
+## Commands
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+| Command | Description |
+|---------|-------------|
+| `npm start` | Dev server at https://harmonica.local (hot reload) |
+| `npm run build` | Production build into `build/` |
+| `npm test` | Jest in watch mode |
+| `npm test -- --watchAll=false` | Single test run (CI mode) |
 
-### Deployment
+Use `craco`, never `react-scripts` directly — the path aliases live in
+`craco.config.js`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Troubleshooting
 
-### `npm run build` fails to minify
+**`You specified SSL_CRT_FILE in your env, but the file ... can't be found`** —
+step 2 has not been run in this checkout. Re-run the `mkcert -cert-file …` command.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Browser warns the certificate is not trusted** — `mkcert -install` was skipped
+or was run without elevation. Re-run it, then restart the browser completely.
+
+**`EADDRINUSE` / `EACCES` on port 443** — something else holds the port
+(`Get-NetTCPConnection -LocalPort 443` on Windows). Override with `PORT=3443` in
+`.env.local`.
+
+**Recording does nothing, console logs "Browser doesn't support audio
+recording"** — the page is on `http://`, not `https://`. Check the address bar;
+the secure-context requirement above is why.

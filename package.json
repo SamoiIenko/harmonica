@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "NODE_ENV=production FAST_REFRESH=false craco build",
+    "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject"
   },
